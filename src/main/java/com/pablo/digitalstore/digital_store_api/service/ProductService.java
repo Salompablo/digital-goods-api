@@ -11,8 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class ProductService {
 
@@ -44,12 +42,12 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public ProductResponse getProductById(Long id){
+    public ProductResponse findProductById(Long id){
         return productMapper.toResponse(productRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("Product with id " + id + " not found.")));
     }
 
-    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+    public Page<ProductResponse> findAllProducts(Pageable pageable) {
         return productMapper.toResponsePage(productRepository.findAll(pageable));
     }
 

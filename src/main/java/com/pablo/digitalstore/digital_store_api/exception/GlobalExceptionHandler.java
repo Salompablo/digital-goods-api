@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
                 .map(this::buildErrorMessage)
                 .collect(Collectors.toList());
 
-        String errorMessage = String.join("\n", errors); // Unir los mensajes de error en un solo string
+        String errorMessage = String.join("\n", errors);
         ErrorDetails errorDetails = ErrorDetails.from("Validation Error", errorMessage);
 
         return ResponseEntity
