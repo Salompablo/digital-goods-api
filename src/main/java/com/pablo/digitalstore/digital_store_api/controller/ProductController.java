@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Products", description = "Operations related to digital products")
 @RestController
 @RequestMapping("/api/v1/products")
 public class ProductController {
@@ -46,6 +47,13 @@ public class ProductController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Invalid input data or missing required fields",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Authentication is required to access this resource",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ErrorDetails.class)
@@ -83,7 +91,14 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
             @ApiResponse(responseCode = "401",
-                    description = "Authentication is required to access this resource.",
+                    description = "Authentication is required to access this resource",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "403",
+                    description = "You do not have permission to delete this resource.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ErrorDetails.class)
@@ -115,7 +130,7 @@ public class ProductController {
 
     @Operation(
             summary = "Get a product by ID",
-            description = "Retrieves a product with the given ID."
+            description = "Retrieves a product with the given ID"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -124,6 +139,13 @@ public class ProductController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ProductResponse.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Authentication is required to access this resource",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class)
                     )
             ),
             @ApiResponse(responseCode = "404",
@@ -147,12 +169,12 @@ public class ProductController {
             @Parameter(description = "ID of the product to retrieve", example = "1")
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(productService.getProductById(id));
+        return ResponseEntity.ok(productService.findProductById(id));
     }
 
     @Operation(
             summary = "Get all products",
-            description = "Returns a paginated list of products, sorted by the given field."
+            description = "Returns a paginated list of products, sorted by the given field"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -164,6 +186,13 @@ public class ProductController {
             ),
             @ApiResponse(responseCode = "400",
                     description = "Invalid pagination parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Authentication is required to access this resource",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ErrorDetails.class)
@@ -189,12 +218,12 @@ public class ProductController {
             @RequestParam String sort) {
 
         Pageable pageable = PageRequest.of(pageNumber, size, Sort.by(sort));
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
+        return ResponseEntity.ok(productService.findAllProducts(pageable));
     }
 
     @Operation(
             summary = "Update a product",
-            description = "Update the information of an existing product."
+            description = "Update the information of an existing product"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -206,6 +235,13 @@ public class ProductController {
             ),
             @ApiResponse(responseCode = "400",
                     description = "Invalid product data",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Authentication is required to access this resource",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ErrorDetails.class)

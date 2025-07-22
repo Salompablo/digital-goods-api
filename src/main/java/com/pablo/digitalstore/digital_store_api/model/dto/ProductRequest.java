@@ -30,7 +30,7 @@ public class ProductRequest {
 
     @NotNull(message = "Product price is required.")
     @DecimalMin(value = "0.01", inclusive = true, message = "Price must be greater than 0 with 2 decimal precision.")
-    @Pattern(regexp = "^(\\d+\\.\\d{1,2})?$", message = "Price must have at most two decimal places.")
+    @Digits(integer = 10, fraction = 2, message = "Price must have at most two decimal places.")
     @Schema(description = "Price of the product", example = "19.99")
     private BigDecimal price;
 
