@@ -1,5 +1,6 @@
 package com.pablo.digitalstore.digital_store_api.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pablo.digitalstore.digital_store_api.model.enums.ProductType;
 import lombok.*;
 

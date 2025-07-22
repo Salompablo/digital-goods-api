@@ -1,10 +1,12 @@
 package com.pablo.digitalstore.digital_store_api.model.entity;
 
-import com.pablo.digitalstore.digital_store_api.model.enums.ProductType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pablo.digitalstore.digital_store_api.model.enums.AuthProvider;
+import com.pablo.digitalstore.digital_store_api.model.enums.Role;
+import com.pablo.digitalstore.digital_store_api.security.model.entity.CredentialsEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,31 +16,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "products")
-public class ProductEntity {
+@Table(name = "users")
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+    private Long userId;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ProductType type;
+    private String firstName;
 
     @Column(nullable = false)
-    private boolean premiumOnly;
+    private String lastName;
 
-    @Column(nullable = false)
-    private String fileUrl;
+    private Boolean active = true;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private CredentialsEntity credentials;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
