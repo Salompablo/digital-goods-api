@@ -1,4 +1,4 @@
-package com.pablo.digitalstore.digital_store_api.security;
+package com.pablo.digitalstore.digital_store_api.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

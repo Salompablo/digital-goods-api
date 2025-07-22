@@ -22,7 +22,7 @@ public class ProductMapper {
 
     public ProductResponse toResponse(ProductEntity productEntity){
         return ProductResponse.builder()
-                .id(productEntity.getId())
+                .id(productEntity.getProductId())
                 .name(productEntity.getName())
                 .description(productEntity.getDescription())
                 .price(productEntity.getPrice())
