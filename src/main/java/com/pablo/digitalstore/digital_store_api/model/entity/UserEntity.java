@@ -1,9 +1,5 @@
 package com.pablo.digitalstore.digital_store_api.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.pablo.digitalstore.digital_store_api.model.enums.AuthProvider;
-import com.pablo.digitalstore.digital_store_api.model.enums.Role;
-import com.pablo.digitalstore.digital_store_api.security.model.entity.CredentialsEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
