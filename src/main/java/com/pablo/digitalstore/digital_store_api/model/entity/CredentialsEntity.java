@@ -1,6 +1,5 @@
-package com.pablo.digitalstore.digital_store_api.security.model.entity;
+package com.pablo.digitalstore.digital_store_api.model.entity;
 
-import com.pablo.digitalstore.digital_store_api.model.entity.UserEntity;
 import com.pablo.digitalstore.digital_store_api.model.enums.AuthProvider;
 import jakarta.persistence.*;
 import lombok.*;
@@ -62,6 +61,11 @@ public class CredentialsEntity implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
     }
 
     @Override

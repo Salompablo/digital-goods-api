@@ -1,4 +1,4 @@
-package com.pablo.digitalstore.digital_store_api.security.model.entity;
+package com.pablo.digitalstore.digital_store_api.model.entity;
 
 import com.pablo.digitalstore.digital_store_api.model.enums.Role;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.pablo.digitalstore.digital_store_api.security.model.enums;
+package com.pablo.digitalstore.digital_store_api.model.enums;
 
 public enum Permits {
     VIEW_PRODUCTS,
