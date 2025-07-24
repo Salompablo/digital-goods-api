@@ -1,8 +1,8 @@
 package com.pablo.digitalstore.digital_store_api.service;
 
 import com.pablo.digitalstore.digital_store_api.exception.ProductAlreadyExistsException;
-import com.pablo.digitalstore.digital_store_api.model.dto.ProductRequest;
-import com.pablo.digitalstore.digital_store_api.model.dto.ProductResponse;
+import com.pablo.digitalstore.digital_store_api.model.dto.request.ProductRequest;
+import com.pablo.digitalstore.digital_store_api.model.dto.response.ProductResponse;
 import com.pablo.digitalstore.digital_store_api.model.entity.ProductEntity;
 import com.pablo.digitalstore.digital_store_api.model.mapper.ProductMapper;
 import com.pablo.digitalstore.digital_store_api.repository.ProductRepository;

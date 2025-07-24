@@ -49,9 +49,9 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean validateRefreshToken(String refreshToken, UserDetails userDetails) {
-        final String username = extractUsername(refreshToken);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(refreshToken);
+    public boolean isRefreshToken(String token) {
+        Claims claims = extractAllClaims(token);
+        return "refresh".equals(claims.get("type"));
     }
 
     private String buildToken(UserDetails userDetails, long expiration) {

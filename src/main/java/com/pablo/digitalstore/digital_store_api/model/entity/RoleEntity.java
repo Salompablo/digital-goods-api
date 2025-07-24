@@ -1,6 +1,6 @@
 package com.pablo.digitalstore.digital_store_api.model.entity;
 
-import com.pablo.digitalstore.digital_store_api.model.enums.Role;
+import com.pablo.digitalstore.digital_store_api.model.enums.Roles;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,9 +21,9 @@ public class RoleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roleId;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private Role role;
+    private Roles role;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(
