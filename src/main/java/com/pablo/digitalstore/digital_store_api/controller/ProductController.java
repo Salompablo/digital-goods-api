@@ -1,8 +1,8 @@
 package com.pablo.digitalstore.digital_store_api.controller;
 
 import com.pablo.digitalstore.digital_store_api.exception.ErrorDetails;
-import com.pablo.digitalstore.digital_store_api.model.dto.ProductRequest;
-import com.pablo.digitalstore.digital_store_api.model.dto.ProductResponse;
+import com.pablo.digitalstore.digital_store_api.model.dto.request.ProductRequest;
+import com.pablo.digitalstore.digital_store_api.model.dto.response.ProductResponse;
 import com.pablo.digitalstore.digital_store_api.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

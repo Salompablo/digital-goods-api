@@ -7,5 +7,5 @@ public interface JwtService {
     String generateRefreshToken(UserDetails userDetails);
     String extractUsername(String token);
     boolean isTokenValid(String token, UserDetails userDetails);
-    boolean validateRefreshToken(String refreshToken, UserDetails userDetails);
+    boolean isRefreshToken(String token);
 }

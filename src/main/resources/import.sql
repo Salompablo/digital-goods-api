@@ -1,0 +1,10 @@
+INSERT INTO roles (role) VALUES ('ADMIN');
+INSERT INTO roles (role) VALUES ('CLIENT');
+
+INSERT INTO permits (permit) VALUES ('VIEW_PRODUCTS');
+INSERT INTO permits (permit) VALUES ('CREATE_PRODUCT');
+INSERT INTO permits (permit) VALUES ('DELETE_PRODUCT');
+INSERT INTO permits (permit) VALUES ('VIEW_USERS');
+INSERT INTO permits (permit) VALUES ('CREATE_USER');
+INSERT INTO permits (permit) VALUES ('DELETE_USER');
+INSERT INTO permits (permit) VALUES ('PURCHASE_PRODUCT');
