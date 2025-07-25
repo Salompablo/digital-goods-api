@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,8 @@ public class AuthController {
 
     @Operation(
             summary = "Authenticate user and return JWT tokens",
-            description = "Authenticates a user using email and password, returning a JWT access token and refresh token."
+            description = "Authenticates a user using email and password, returning a JWT access token and refresh token.",
+            security = @SecurityRequirement(name = "")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -55,7 +57,8 @@ public class AuthController {
 
     @Operation(
             summary = "Register new user and return JWT tokens",
-            description = "Registers a new user using first name, last name, email and password, and returns JWT tokens."
+            description = "Registers a new user using first name, last name, email and password, and returns JWT tokens.",
+            security = @SecurityRequirement(name = "")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -79,7 +82,8 @@ public class AuthController {
 
     @Operation(
             summary = "Refresh JWT tokens",
-            description = "Generates a new access and refresh token using a valid refresh token"
+            description = "Generates a new access and refresh token using a valid refresh token",
+            security = @SecurityRequirement(name = "")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Tokens refreshed",
