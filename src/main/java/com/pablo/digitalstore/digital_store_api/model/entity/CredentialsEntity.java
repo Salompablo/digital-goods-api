@@ -54,9 +54,17 @@ public class CredentialsEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
-                .collect(Collectors.toSet());
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        for (RoleEntity role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getRole().name()));
+
+            role.getPermits().forEach(permit ->
+                    authorities.add(new SimpleGrantedAuthority(permit.getPermit().name()))
+            );
+        }
+
+        return authorities;
     }
 
     @Override

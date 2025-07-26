@@ -2,6 +2,13 @@ package com.pablo.digitalstore.digital_store_api.model.entity;
 
 import com.pablo.digitalstore.digital_store_api.model.enums.Permits;
 import jakarta.persistence.*;
+import lombok.*;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 
 @Entity
 @Table(name = "permits")
