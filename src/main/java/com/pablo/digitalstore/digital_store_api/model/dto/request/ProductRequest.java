@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Schema(
         description = "Request object for creating or updating a digital product",
         requiredProperties = {"name", "description", "price", "type"}

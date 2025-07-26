@@ -1,5 +1,6 @@
 package com.pablo.digitalstore.digital_store_api.model.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pablo.digitalstore.digital_store_api.model.enums.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -33,9 +34,11 @@ public record ProductResponse(
         @Schema(description = "Download URL of the product file", example = "https://cdn.digitalstore.com/products/java-course.zip")
         String fileUrl,
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "Date and time when the product was created", example = "2025-07-24T18:12:30")
         LocalDateTime createdAt,
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "Date and time when the product was last updated", example = "2025-07-24T18:15:45")
         LocalDateTime updatedAt
 

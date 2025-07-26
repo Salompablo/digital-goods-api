@@ -3,7 +3,7 @@ package com.pablo.digitalstore.digital_store_api.controller;
 import com.pablo.digitalstore.digital_store_api.exception.ErrorDetails;
 import com.pablo.digitalstore.digital_store_api.model.dto.request.ProductRequest;
 import com.pablo.digitalstore.digital_store_api.model.dto.response.ProductResponse;
-import com.pablo.digitalstore.digital_store_api.service.ProductService;
+import com.pablo.digitalstore.digital_store_api.service.ProductServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Products", description = "Operations related to digital products")
@@ -26,11 +27,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/products")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductServiceImpl productServiceImpl;
 
     @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
+    public ProductController(ProductServiceImpl productServiceImpl) {
+        this.productServiceImpl = productServiceImpl;
     }
 
     @Operation(
@@ -77,12 +78,13 @@ public class ProductController {
                     )
             )
     })
+    @PreAuthorize("hasAuthority('CREATE_PRODUCT')")
     @PostMapping()
     public ResponseEntity<ProductResponse> createProduct(
             @Parameter(description = "Data for the new product", required = true)
             @Valid @RequestBody ProductRequest productRequest) {
 
-        ProductResponse savedProduct = productService.createProduct(productRequest);
+        ProductResponse savedProduct = productServiceImpl.createProduct(productRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
@@ -121,12 +123,13 @@ public class ProductController {
                     )
             )
     })
+    @PreAuthorize("hasAuthority('DELETE_PRODUCT')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(
             @Parameter(description = "ID of the product to delete", example = "1")
             @PathVariable Long id) {
 
-        productService.deleteProduct(id);
+        productServiceImpl.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -166,12 +169,13 @@ public class ProductController {
                     )
             )
     })
+    @PreAuthorize("hasAuthority('VIEW_PRODUCTS')")
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProductById(
             @Parameter(description = "ID of the product to retrieve", example = "1")
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(productService.findProductById(id));
+        return ResponseEntity.ok(productServiceImpl.findProductById(id));
     }
 
     @Operation(
@@ -208,6 +212,7 @@ public class ProductController {
                     )
             )
     })
+    @PreAuthorize("hasAuthority('VIEW_PRODUCTS')")
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
             @Parameter(description = "Number of items per page", example = "10")
@@ -220,7 +225,7 @@ public class ProductController {
             @RequestParam String sort) {
 
         Pageable pageable = PageRequest.of(pageNumber, size, Sort.by(sort));
-        return ResponseEntity.ok(productService.findAllProducts(pageable));
+        return ResponseEntity.ok(productServiceImpl.findAllProducts(pageable));
     }
 
     @Operation(
@@ -257,6 +262,7 @@ public class ProductController {
                     )
             )
     })
+    @PreAuthorize("hasAuthority('CREATE_PRODUCT')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @Parameter(description = "ID of the product to be updated", required = true)
@@ -264,7 +270,7 @@ public class ProductController {
 
             @Parameter(description = "Updated product information", required = true)
             @RequestBody ProductRequest productRequest) {
-        ProductResponse productResponse = productService.updateProduct(id, productRequest);
+        ProductResponse productResponse = productServiceImpl.updateProduct(id, productRequest);
         return ResponseEntity.ok(productResponse);
     }
 }
