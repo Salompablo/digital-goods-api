@@ -9,4 +9,5 @@ public interface AuthService {
     AuthResponse login(AuthRequest request);
     AuthResponse register(UserRequest request);
     AuthResponse refreshToken(AuthRefreshRequest request);
+    AuthResponse reactivateUser(AuthRequest request);
 }

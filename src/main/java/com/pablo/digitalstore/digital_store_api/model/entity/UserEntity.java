@@ -3,6 +3,7 @@ package com.pablo.digitalstore.digital_store_api.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -35,10 +36,14 @@ public class UserEntity {
 
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private Instant lastTokenIssuedAt;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.lastTokenIssuedAt = Instant.now();
     }
 
     @PreUpdate

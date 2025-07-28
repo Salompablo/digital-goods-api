@@ -1,5 +1,6 @@
 package com.pablo.digitalstore.digital_store_api.auth;
 
+import com.pablo.digitalstore.digital_store_api.exception.UserDisabledException;
 import com.pablo.digitalstore.digital_store_api.jwt.JwtService;
 import com.pablo.digitalstore.digital_store_api.model.dto.request.AuthRefreshRequest;
 import com.pablo.digitalstore.digital_store_api.model.dto.request.AuthRequest;
@@ -15,10 +16,15 @@ import com.pablo.digitalstore.digital_store_api.repository.CredentialsRepository
 import com.pablo.digitalstore.digital_store_api.repository.RoleRepository;
 import com.pablo.digitalstore.digital_store_api.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -52,15 +58,22 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(AuthRequest request) {
+        CredentialsEntity credentials = credentialsRepository.findByEmail(request.email())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!credentials.getUser().getActive()) {
+            throw new UserDisabledException("Your account is disabled. Please reactivate it.");
+        }
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
-        CredentialsEntity credentials = credentialsRepository.findByEmail(request.email())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
         String jwt = jwtService.generateToken(credentials);
         String refresh = jwtService.generateRefreshToken(credentials);
+
+        credentials.getUser().setLastTokenIssuedAt(Instant.now());
+        userRepository.save(credentials.getUser());
 
         credentials.setRefreshToken(refresh);
         credentialsRepository.save(credentials);
@@ -107,6 +120,13 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid refresh token");
         }
 
+        Instant tokenIssuedAt = jwtService.extractIssuedAt(refreshToken);
+        Instant lastIssuedAt = credentials.getUser().getLastTokenIssuedAt();
+
+        if (lastIssuedAt != null && tokenIssuedAt.isBefore(lastIssuedAt)) {
+            throw new RuntimeException("Refresh token is no longer valid");
+        }
+
         String newAccessToken = jwtService.generateToken(credentials);
         String newRefreshToken = jwtService.generateRefreshToken(credentials);
 
@@ -114,5 +134,32 @@ public class AuthServiceImpl implements AuthService {
         credentialsRepository.save(credentials);
 
         return new AuthResponse(newAccessToken, newRefreshToken);
+    }
+
+
+    @Override
+    public AuthResponse reactivateUser(AuthRequest request) {
+        CredentialsEntity credentials = credentialsRepository.findByEmail(request.email())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (credentials.getUser().getActive()) {
+            throw new IllegalStateException("Account is already active.");
+        }
+
+        if (!passwordEncoder.matches(request.password(), credentials.getPassword())) {
+            throw new BadCredentialsException("Invalid credentials");
+        }
+
+        credentials.getUser().setActive(true);
+        credentials.getUser().setLastTokenIssuedAt(Instant.now());
+        userRepository.save(credentials.getUser());
+
+        String jwt = jwtService.generateToken(credentials);
+        String refresh = jwtService.generateRefreshToken(credentials);
+
+        credentials.setRefreshToken(refresh);
+        credentialsRepository.save(credentials);
+
+        return new AuthResponse(jwt, refresh);
     }
 }

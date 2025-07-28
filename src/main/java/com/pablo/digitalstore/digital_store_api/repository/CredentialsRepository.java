@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface CredentialsRepository extends JpaRepository<CredentialsEntity, Long> {
     Optional<CredentialsEntity> findByEmail(String email);
+    boolean existsByEmail(String email);
 }
