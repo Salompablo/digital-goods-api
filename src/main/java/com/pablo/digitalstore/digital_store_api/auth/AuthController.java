@@ -96,4 +96,32 @@ public class AuthController {
         AuthResponse response = authService.refreshToken(request);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(
+            summary = "Reactivate a deactivated user account",
+            description = "Allows a user whose account has been deactivated to reactivate it by providing valid credentials. "
+                    + "If authentication is successful and the account was previously disabled, it will be reactivated and JWT tokens will be returned.",
+            security = @SecurityRequirement(name = "")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Account successfully reactivated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AuthResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Account is already active",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class))),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class))),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class)))
+    })
+    @PostMapping("/reactivate")
+    public ResponseEntity<AuthResponse> reactivateAccount(@RequestBody AuthRequest request) {
+        return ResponseEntity.ok(authService.reactivateUser(request));
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +53,11 @@ public class JwtServiceImpl implements JwtService {
     public boolean isRefreshToken(String token) {
         Claims claims = extractAllClaims(token);
         return "refresh".equals(claims.get("type"));
+    }
+
+    @Override
+    public Instant extractIssuedAt(String token) {
+        return extractClaim(token, Claims::getIssuedAt).toInstant();
     }
 
     private String buildToken(UserDetails userDetails, long expiration) {
