@@ -36,14 +36,11 @@ public class UserEntity {
 
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private Instant lastTokenIssuedAt;
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.lastTokenIssuedAt = Instant.now();
     }
 
     @PreUpdate
