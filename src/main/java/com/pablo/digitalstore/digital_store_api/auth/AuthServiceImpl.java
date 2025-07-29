@@ -72,7 +72,6 @@ public class AuthServiceImpl implements AuthService {
         String jwt = jwtService.generateToken(credentials);
         String refresh = jwtService.generateRefreshToken(credentials);
 
-        credentials.getUser().setLastTokenIssuedAt(Instant.now());
         userRepository.save(credentials.getUser());
 
         credentials.setRefreshToken(refresh);
@@ -120,13 +119,6 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid refresh token");
         }
 
-        Instant tokenIssuedAt = jwtService.extractIssuedAt(refreshToken);
-        Instant lastIssuedAt = credentials.getUser().getLastTokenIssuedAt();
-
-        if (lastIssuedAt != null && tokenIssuedAt.isBefore(lastIssuedAt)) {
-            throw new RuntimeException("Refresh token is no longer valid");
-        }
-
         String newAccessToken = jwtService.generateToken(credentials);
         String newRefreshToken = jwtService.generateRefreshToken(credentials);
 
@@ -151,7 +143,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         credentials.getUser().setActive(true);
-        credentials.getUser().setLastTokenIssuedAt(Instant.now());
         userRepository.save(credentials.getUser());
 
         String jwt = jwtService.generateToken(credentials);
