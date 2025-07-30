@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,6 +27,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CredentialsRepository credentialsRepository;
     private final UserMapper userMapper;
+
+    private static final List<String> ALLOWED_SORT_FIELDS = List.of("productId", "name", "price", "type");
 
     public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, CredentialsRepository credentialsRepository, UserMapper userMapper) {
         this.passwordEncoder = passwordEncoder;
@@ -38,6 +41,11 @@ public class UserServiceImpl implements UserService {
     public UserResponse getCurrentUser() {
         CredentialsEntity credentials = getCurrentUserCredentials();
         return userMapper.toResponse(credentials.getUser());
+    }
+
+    @Override
+    public UserEntity getCurrentUserEntity() {
+        return getCurrentUserCredentials().getUser();
     }
 
     @Override
