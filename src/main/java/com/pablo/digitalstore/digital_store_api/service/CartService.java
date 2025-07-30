@@ -4,5 +4,9 @@ import com.pablo.digitalstore.digital_store_api.model.dto.request.AddProductToCa
 import com.pablo.digitalstore.digital_store_api.model.dto.response.CartResponse;
 
 public interface CartService {
-    CartResponse addProductToCart(Long userId, AddProductToCartRequest request);
+    CartResponse getCurrentCart();
+    CartResponse addProductToCurrentCart(AddProductToCartRequest request);
+    CartResponse decreaseProductQuantityInCurrentCart(Long productId);
+    CartResponse removeProductFromCurrentCart(Long productId);
+    CartResponse clearCurrentCart();
 }
