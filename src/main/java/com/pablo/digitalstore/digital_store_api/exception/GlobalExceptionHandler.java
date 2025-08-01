@@ -118,6 +118,13 @@ public class GlobalExceptionHandler {
                 .body(ErrorDetails.from(ex.getMessage(), request.getDescription(false)));
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorDetails> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ErrorDetails.from("Access denied: " + ex.getMessage(), request.getDescription(false)));
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorDetails> handleBadCredentials(BadCredentialsException ex, WebRequest request) {
         return ResponseEntity
