@@ -50,11 +50,13 @@ public class OrderServiceImpl implements  OrderService {
         order.setStatus(OrderStatus.PENDING);
 
         for (CartItemEntity cartItem : cart.getItems()) {
-            OrderItemEntity orderItem = new OrderItemEntity();
-            orderItem.setOrder(order);
-            orderItem.setProduct(cartItem.getProduct());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setUnitPrice(cartItem.getUnitPrice());
+            OrderItemEntity orderItem = OrderItemEntity.builder()
+                    .order(order)
+                    .product(cartItem.getProduct())
+                    .quantity(cartItem.getQuantity())
+                    .unitPrice(cartItem.getUnitPrice())
+                    .build();
+
             order.getItems().add(orderItem);
         }
 
@@ -83,4 +85,15 @@ public class OrderServiceImpl implements  OrderService {
         cart.getItems().clear();
         cartRepository.save(cart);
     }
+
+    @Override
+    public OrderResponse getPendingOrderForCurrentUser() {
+        UserEntity user = userService.getCurrentUserEntity();
+
+        OrderEntity pendingOrder = orderRepository.findByUserAndStatus(user, OrderStatus.PENDING)
+                .orElseThrow(() -> new EntityNotFoundException("No pending order found"));
+
+        return orderMapper.toOrderResponse(pendingOrder);
+    }
+
 }

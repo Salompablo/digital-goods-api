@@ -43,7 +43,15 @@ public class CartServiceImpl implements CartService {
         UserEntity user = userService.getCurrentUserEntity();
 
         CartEntity cart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+                .orElseGet(() -> {
+                    CartEntity newCart = CartEntity.builder()
+                            .user(user)
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
+                            .items(new ArrayList<>())
+                            .build();
+                    return cartRepository.save(newCart);
+                });
 
         return cartMapper.toCartResponse(cart);
     }
@@ -56,10 +64,12 @@ public class CartServiceImpl implements CartService {
         CartEntity cart = cartRepository.findByUser(user).orElse(null);
 
         if (cart == null) {
-            cart = new CartEntity();
-            cart.setUser(user);
-            cart.setCreatedAt(LocalDateTime.now());
-            cart.setUpdatedAt(LocalDateTime.now());
+            cart = CartEntity.builder()
+                    .user(user)
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+
             cart = cartRepository.save(cart);
         } else {
             cart.setUpdatedAt(LocalDateTime.now());

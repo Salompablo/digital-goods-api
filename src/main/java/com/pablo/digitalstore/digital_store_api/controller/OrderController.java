@@ -143,4 +143,22 @@ public class OrderController {
         orderService.cancelCurrentCart();
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(
+            summary = "Get current pending order",
+            description = "Returns the current pending order for the authenticated user."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pending order retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
+            @ApiResponse(responseCode = "404", description = "No pending order found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
+    })
+    @PreAuthorize("hasAuthority('VIEW_ORDERS')")
+    @GetMapping("/pending")
+    public ResponseEntity<OrderResponse> getPendingOrderForCurrentUser() {
+        return ResponseEntity.ok(orderService.getPendingOrderForCurrentUser());
+    }
 }

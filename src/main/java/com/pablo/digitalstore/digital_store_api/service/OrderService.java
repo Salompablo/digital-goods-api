@@ -8,4 +8,5 @@ public interface OrderService {
     OrderResponse checkoutCurrentCart();
     Page<OrderResponse> getOrdersByCurrentUser(Pageable pageable);
     void cancelCurrentCart();
+    OrderResponse getPendingOrderForCurrentUser();
 }
