@@ -1,10 +1,12 @@
 package com.pablo.digitalstore.digital_store_api.exception;
 
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,6 +91,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errorDetails);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorDetails> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
+
+        String message = "Invalid request body";
+
+        if (ex.getCause() instanceof InvalidFormatException invalidEx
+                && invalidEx.getTargetType().isEnum()) {
+            message = String.format("Invalid value '%s' for enum %s. Allowed values: %s",
+                    invalidEx.getValue(),
+                    invalidEx.getTargetType().getSimpleName(),
+                    Arrays.toString(invalidEx.getTargetType().getEnumConstants()));
+        }
+
+        return ResponseEntity
+                .badRequest()
+                .body(ErrorDetails.from(message, request.getDescription(false)));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
