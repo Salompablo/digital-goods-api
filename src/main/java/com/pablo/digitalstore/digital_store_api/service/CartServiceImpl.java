@@ -10,7 +10,6 @@ import com.pablo.digitalstore.digital_store_api.model.mapper.CartMapper;
 import com.pablo.digitalstore.digital_store_api.repository.CartItemRepository;
 import com.pablo.digitalstore.digital_store_api.repository.CartRepository;
 import com.pablo.digitalstore.digital_store_api.repository.ProductRepository;
-import com.pablo.digitalstore.digital_store_api.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -24,23 +23,23 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final CartMapper cartMapper;
-    private final UserService userService;
+    private final AuthenticatedUserService authenticatedUserService;
 
     public CartServiceImpl(CartRepository cartRepository,
                            CartItemRepository cartItemRepository,
                            ProductRepository productRepository,
                            CartMapper cartMapper,
-                           UserService userService) {
+                           AuthenticatedUserService authenticatedUserService) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.productRepository = productRepository;
         this.cartMapper = cartMapper;
-        this.userService = userService;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     @Override
     public CartResponse getCurrentCart() {
-        UserEntity user = userService.getCurrentUserEntity();
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
 
         CartEntity cart = cartRepository.findByUser(user)
                 .orElseGet(() -> {
@@ -58,7 +57,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse addProductToCurrentCart(AddProductToCartRequest request) {
-        UserEntity user = userService.getCurrentUserEntity();
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
         ProductEntity product = getProductOrThrow(request.productId());
 
         CartEntity cart = cartRepository.findByUser(user).orElse(null);
@@ -98,7 +97,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse decreaseProductQuantityInCurrentCart(Long productId) {
-        UserEntity user = userService.getCurrentUserEntity();
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
         ProductEntity product = getProductOrThrow(productId);
         CartEntity cart = getCartOrThrow(user);
         CartItemEntity item = getCartItemOrThrow(cart, product);
@@ -120,7 +119,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse removeProductFromCurrentCart(Long productId) {
-        UserEntity user = userService.getCurrentUserEntity();
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
         ProductEntity product = getProductOrThrow(productId);
         CartEntity cart = getCartOrThrow(user);
         CartItemEntity item = getCartItemOrThrow(cart, product);
@@ -135,7 +134,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse clearCurrentCart() {
-        UserEntity user = userService.getCurrentUserEntity();
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
         CartEntity cart = getCartOrThrow(user);
 
         for (CartItemEntity item : new ArrayList<>(cart.getItems())) {

@@ -132,6 +132,13 @@ public class GlobalExceptionHandler {
                 .body(ErrorDetails.from("Your account is disabled. Please reactivate it to continue.", request.getDescription(false)));
     }
 
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorDetails> handleBusinessException(BusinessException ex, WebRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorDetails.from(ex.getMessage(), request.getDescription(false)));
+    }
+
     @ExceptionHandler(UserDisabledException.class)
     public ResponseEntity<ErrorDetails> handleUserDisabled(UserDisabledException ex, WebRequest request) {
         return ResponseEntity

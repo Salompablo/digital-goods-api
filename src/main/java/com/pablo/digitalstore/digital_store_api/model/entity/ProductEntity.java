@@ -35,9 +35,6 @@ public class ProductEntity {
     private ProductType type;
 
     @Column(nullable = false)
-    private boolean premiumOnly;
-
-    @Column(nullable = false)
     private String fileUrl;
 
     @Column(nullable = false, updatable = false)

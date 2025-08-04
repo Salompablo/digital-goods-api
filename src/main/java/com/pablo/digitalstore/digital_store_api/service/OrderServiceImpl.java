@@ -1,11 +1,15 @@
 package com.pablo.digitalstore.digital_store_api.service;
 
+import com.pablo.digitalstore.digital_store_api.exception.BusinessException;
 import com.pablo.digitalstore.digital_store_api.model.dto.response.OrderResponse;
+import com.pablo.digitalstore.digital_store_api.model.dto.response.ProductResponse;
 import com.pablo.digitalstore.digital_store_api.model.entity.*;
 import com.pablo.digitalstore.digital_store_api.model.enums.OrderStatus;
 import com.pablo.digitalstore.digital_store_api.model.mapper.OrderMapper;
+import com.pablo.digitalstore.digital_store_api.model.mapper.ProductMapper;
 import com.pablo.digitalstore.digital_store_api.repository.CartRepository;
 import com.pablo.digitalstore.digital_store_api.repository.OrderRepository;
+import com.pablo.digitalstore.digital_store_api.repository.UserProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -13,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class OrderServiceImpl implements  OrderService {
@@ -21,21 +26,29 @@ public class OrderServiceImpl implements  OrderService {
     private final CartRepository cartRepository;
     private final UserService userService;
     private final OrderMapper orderMapper;
+    private final UserProductRepository userProductRepository;
+    private final ProductMapper productMapper;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             CartRepository cartRepository,
                             UserService userService,
-                            OrderMapper orderMapper) {
+                            OrderMapper orderMapper, UserProductRepository userProductRepository, ProductMapper productMapper) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.userService = userService;
         this.orderMapper = orderMapper;
+        this.userProductRepository = userProductRepository;
+        this.productMapper = productMapper;
     }
 
     @Override
     @Transactional
     public OrderResponse checkoutCurrentCart() {
         UserEntity user = userService.getCurrentUserEntity();
+
+        if (orderRepository.existsByUserAndStatus(user, OrderStatus.PENDING)) {
+            throw new BusinessException("You already have a pending order. Please complete or cancel it first.");
+        }
 
         CartEntity cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
@@ -58,6 +71,16 @@ public class OrderServiceImpl implements  OrderService {
                     .build();
 
             order.getItems().add(orderItem);
+        }
+
+        for (OrderItemEntity item : order.getItems()) {
+            UserProductEntity userProduct = UserProductEntity.builder()
+                    .user(user)
+                    .product(item.getProduct())
+                    .purchaseDate(LocalDateTime.now())
+                    .build();
+
+            userProductRepository.save(userProduct);
         }
 
         orderRepository.save(order);
@@ -94,6 +117,17 @@ public class OrderServiceImpl implements  OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("No pending order found"));
 
         return orderMapper.toOrderResponse(pendingOrder);
+    }
+
+    @Override
+    public List<ProductResponse> getPurchasedProductsForCurrentUser() {
+        UserEntity user = userService.getCurrentUserEntity();
+        List<UserProductEntity> userProducts = userProductRepository.findByUser(user);
+
+        return userProducts.stream()
+                .map(UserProductEntity::getProduct)
+                .map(productMapper::toResponse)
+                .toList();
     }
 
 }

@@ -17,5 +17,6 @@ public enum Permits {
 
     CHECKOUT_CART,
     VIEW_ORDERS,
-    CANCEL_CART
+    CANCEL_CART,
+    VIEW_PURCHASES
 }
