@@ -3,6 +3,7 @@ package com.pablo.digitalstore.digital_store_api.controller;
 import com.pablo.digitalstore.digital_store_api.exception.ErrorDetails;
 import com.pablo.digitalstore.digital_store_api.model.dto.request.ChangePasswordRequest;
 import com.pablo.digitalstore.digital_store_api.model.dto.request.UserUpdateRequest;
+import com.pablo.digitalstore.digital_store_api.model.dto.response.ProductResponse;
 import com.pablo.digitalstore.digital_store_api.model.dto.response.UserResponse;
 import com.pablo.digitalstore.digital_store_api.model.entity.CredentialsEntity;
 import com.pablo.digitalstore.digital_store_api.model.mapper.UserMapper;
@@ -22,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "User", description = "Operations related to user account")
 @RestController
@@ -173,6 +176,17 @@ public class UserController {
     public ResponseEntity<Void> reactivateMyAccount() {
         userService.reactivateCurrentUser();
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Get purchased products", description = "Returns the list of products purchased by the current user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Products retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
+    })
+    @PreAuthorize("hasAuthority('VIEW_PURCHASES')")
+    @GetMapping("/me/products")
+    public ResponseEntity<List<ProductResponse>> getMyPurchasedProducts() {
+        return ResponseEntity.ok(userService.getPurchasedProductsForCurrentUser());
     }
 }
 

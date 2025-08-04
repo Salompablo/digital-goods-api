@@ -15,7 +15,6 @@ public class ProductMapper {
                 .description(productRequest.getDescription())
                 .price(productRequest.getPrice())
                 .type(productRequest.getType())
-                .premiumOnly(productRequest.getPremiumOnly())
                 .fileUrl(productRequest.getFileUrl())
                 .build();
     }
@@ -27,7 +26,6 @@ public class ProductMapper {
                 .description(productEntity.getDescription())
                 .price(productEntity.getPrice())
                 .type(productEntity.getType())
-                .premiumOnly(productEntity.isPremiumOnly())
                 .fileUrl(productEntity.getFileUrl())
                 .createdAt(productEntity.getCreatedAt())
                 .updatedAt(productEntity.getUpdatedAt())

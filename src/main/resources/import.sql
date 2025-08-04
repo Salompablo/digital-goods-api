@@ -17,6 +17,7 @@ INSERT INTO permits (permit) VALUES ( 'CHANGE_PASSWORD');
 INSERT INTO permits (permit) VALUES ('CHECKOUT_CART');
 INSERT INTO permits (permit) VALUES ('VIEW_ORDERS');
 INSERT INTO permits (permit) VALUES ('CANCEL_CART');
+INSERT INTO permits (permit) VALUES ('VIEW_PURCHASES');
 -- Role-Permits
 
 -- ADMIN
@@ -43,4 +44,5 @@ INSERT INTO role_permits (role_id, permit_id) VALUES (2, 11); -- CHANGE_PASSWORD
 INSERT INTO role_permits (role_id, permit_id) VALUES (2, 12); -- CHECKOUT_CART
 INSERT INTO role_permits (role_id, permit_id) VALUES (2, 13); -- VIEW_ORDERS
 INSERT INTO role_permits (role_id, permit_id) VALUES (2, 14); -- CANCEL_CART
+INSERT INTO role_permits (role_id, permit_id) VALUES ( 2, 15); -- VIEW_PURCHASES
 

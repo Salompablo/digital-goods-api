@@ -72,7 +72,6 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setDescription(productRequest.getDescription());
         productEntity.setPrice(productRequest.getPrice());
         productEntity.setType(productRequest.getType());
-        productEntity.setPremiumOnly(productRequest.getPremiumOnly());
         productEntity.setFileUrl(productRequest.getFileUrl());
 
         productEntity = productRepository.save(productEntity);

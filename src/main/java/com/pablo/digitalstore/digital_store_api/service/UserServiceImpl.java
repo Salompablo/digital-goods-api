@@ -2,11 +2,16 @@ package com.pablo.digitalstore.digital_store_api.service;
 
 import com.pablo.digitalstore.digital_store_api.model.dto.request.ChangePasswordRequest;
 import com.pablo.digitalstore.digital_store_api.model.dto.request.UserUpdateRequest;
+import com.pablo.digitalstore.digital_store_api.model.dto.response.ProductResponse;
 import com.pablo.digitalstore.digital_store_api.model.dto.response.UserResponse;
 import com.pablo.digitalstore.digital_store_api.model.entity.CredentialsEntity;
 import com.pablo.digitalstore.digital_store_api.model.entity.UserEntity;
+import com.pablo.digitalstore.digital_store_api.model.entity.UserProductEntity;
+import com.pablo.digitalstore.digital_store_api.model.mapper.ProductMapper;
 import com.pablo.digitalstore.digital_store_api.model.mapper.UserMapper;
 import com.pablo.digitalstore.digital_store_api.repository.CredentialsRepository;
+import com.pablo.digitalstore.digital_store_api.repository.ProductRepository;
+import com.pablo.digitalstore.digital_store_api.repository.UserProductRepository;
 import com.pablo.digitalstore.digital_store_api.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -27,31 +32,40 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CredentialsRepository credentialsRepository;
     private final UserMapper userMapper;
+    private final AuthenticatedUserService authenticatedUserService;
+    private final ProductMapper productMapper;
+    private final UserProductRepository userProductRepository;
 
-    private static final List<String> ALLOWED_SORT_FIELDS = List.of("productId", "name", "price", "type");
-
-    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, CredentialsRepository credentialsRepository, UserMapper userMapper) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder,
+                           UserRepository userRepository,
+                           CredentialsRepository credentialsRepository,
+                           UserMapper userMapper,
+                           AuthenticatedUserService authenticatedUserService,
+                           ProductMapper productMapper,
+                           UserProductRepository userProductRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.credentialsRepository = credentialsRepository;
         this.userMapper = userMapper;
+        this.authenticatedUserService = authenticatedUserService;
+        this.productMapper = productMapper;
+        this.userProductRepository = userProductRepository;
     }
 
     @Override
     public UserResponse getCurrentUser() {
-        CredentialsEntity credentials = getCurrentUserCredentials();
-        return userMapper.toResponse(credentials.getUser());
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
+        return userMapper.toResponse(user);
     }
 
     @Override
     public UserEntity getCurrentUserEntity() {
-        return getCurrentUserCredentials().getUser();
+        return authenticatedUserService.getCurrentUserEntity();
     }
 
     @Override
     public UserResponse updateCurrentUser(UserUpdateRequest request) {
-        CredentialsEntity credentials = getCurrentUserCredentials();
-        UserEntity user = credentials.getUser();
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
 
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
@@ -63,8 +77,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deactivateCurrentUser() {
-        CredentialsEntity credentials = getCurrentUserCredentials();
-        UserEntity user = credentials.getUser();
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
+
         user.setActive(false);
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
@@ -72,7 +86,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeMyPassword(ChangePasswordRequest request) {
-        CredentialsEntity credentials = getCurrentUserCredentials();
+        CredentialsEntity credentials = credentialsRepository.findByUser(authenticatedUserService.getCurrentUserEntity())
+                .orElseThrow(() -> new UsernameNotFoundException("User credentials not found"));
 
         if (!passwordEncoder.matches(request.currentPassword(), credentials.getPassword())) {
             throw new BadCredentialsException("Current password is incorrect");
@@ -132,8 +147,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void reactivateCurrentUser() {
-        CredentialsEntity credentials = getCurrentUserCredentials();
-        UserEntity user = credentials.getUser();
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
 
         if (Boolean.TRUE.equals(user.getActive())) {
             throw new IllegalStateException("User account is already active.");
@@ -144,10 +158,16 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    private CredentialsEntity getCurrentUserCredentials() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return credentialsRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    @Override
+    public List<ProductResponse> getPurchasedProductsForCurrentUser() {
+        UserEntity user = authenticatedUserService.getCurrentUserEntity();
+        List<UserProductEntity> userProducts = userProductRepository.findByUser(user);
+
+        return userProducts.stream()
+                .map(UserProductEntity::getProduct)
+                .map(productMapper::toResponse)
+                .toList();
     }
 
 }
+
