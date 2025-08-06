@@ -67,6 +67,7 @@ public class CartServiceImpl implements CartService {
                     .user(user)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
+                    .items(new ArrayList<>())
                     .build();
 
             cart = cartRepository.save(cart);

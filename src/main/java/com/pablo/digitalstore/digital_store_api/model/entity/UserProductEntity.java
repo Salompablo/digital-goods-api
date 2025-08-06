@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 
 @Entity
-@Table(name = "user_products", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "product_id"}))
+@Table(name = "user_products", uniqueConstraints = @UniqueConstraint(columnNames = {"user_user_id", "product_product_id"}))
 public class UserProductEntity {
 
     @Id
@@ -24,6 +24,9 @@ public class UserProductEntity {
 
     @ManyToOne(optional = false)
     private ProductEntity product;
+
+    @ManyToOne(optional = false)
+    private OrderEntity order;
 
     private LocalDateTime purchaseDate;
 

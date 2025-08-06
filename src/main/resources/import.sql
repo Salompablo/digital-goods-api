@@ -6,7 +6,6 @@ INSERT INTO roles (role) VALUES ('ROLE_CLIENT');
 INSERT INTO permits (permit) VALUES ('VIEW_PRODUCTS');
 INSERT INTO permits (permit) VALUES ('CREATE_PRODUCT');
 INSERT INTO permits (permit) VALUES ('DELETE_PRODUCT');
-INSERT INTO permits (permit) VALUES ( 'PURCHASE_PRODUCT');
 INSERT INTO permits (permit) VALUES ( 'VIEW_USERS');
 INSERT INTO permits (permit) VALUES ( 'MANAGE_USERS');
 INSERT INTO permits (permit) VALUES ( 'VIEW_SELF');
@@ -16,8 +15,8 @@ INSERT INTO permits (permit) VALUES ( 'REACTIVATE_SELF');
 INSERT INTO permits (permit) VALUES ( 'CHANGE_PASSWORD');
 INSERT INTO permits (permit) VALUES ('CHECKOUT_CART');
 INSERT INTO permits (permit) VALUES ('VIEW_ORDERS');
-INSERT INTO permits (permit) VALUES ('CANCEL_CART');
-INSERT INTO permits (permit) VALUES ('VIEW_PURCHASES');
+INSERT INTO permits (permit) VALUES ('UPDATE_CART');
+INSERT INTO permits (permit) VALUES ('VIEW_USER_PRODUCTS');
 -- Role-Permits
 
 -- ADMIN
@@ -35,14 +34,13 @@ INSERT INTO role_permits (role_id, permit_id) VALUES (1, 11);
 
 -- CLIENT
 INSERT INTO role_permits (role_id, permit_id) VALUES (2, 1);  -- VIEW_PRODUCTS
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 4);  -- PURCHASE_PRODUCT
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 7);  -- VIEW_SELF
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 8);  -- UPDATE_SELF
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 9);  -- DEACTIVATE_SELF
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 10); -- REACTIVATE_SELF
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 11); -- CHANGE_PASSWORD
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 12); -- CHECKOUT_CART
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 13); -- VIEW_ORDERS
-INSERT INTO role_permits (role_id, permit_id) VALUES (2, 14); -- CANCEL_CART
-INSERT INTO role_permits (role_id, permit_id) VALUES ( 2, 15); -- VIEW_PURCHASES
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 6);  -- VIEW_SELF
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 7);  -- UPDATE_SELF
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 8);  -- DEACTIVATE_SELF
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 9);  -- REACTIVATE_SELF
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 10); -- CHANGE_PASSWORD
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 11); -- CHECKOUT_CART
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 12); -- VIEW_ORDERS
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 13); -- UPDATE_CART
+INSERT INTO role_permits (role_id, permit_id) VALUES (2, 14); -- VIEW_USER_PRODUCTS
 

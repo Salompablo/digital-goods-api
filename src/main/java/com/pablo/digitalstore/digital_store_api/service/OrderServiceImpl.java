@@ -77,6 +77,7 @@ public class OrderServiceImpl implements  OrderService {
             UserProductEntity userProduct = UserProductEntity.builder()
                     .user(user)
                     .product(item.getProduct())
+                    .order(order)
                     .purchaseDate(LocalDateTime.now())
                     .build();
 
@@ -120,14 +121,10 @@ public class OrderServiceImpl implements  OrderService {
     }
 
     @Override
-    public List<ProductResponse> getPurchasedProductsForCurrentUser() {
+    public Page<ProductResponse> getProductsForCurrentUserByOrderStatus(OrderStatus status, Pageable pageable) {
         UserEntity user = userService.getCurrentUserEntity();
-        List<UserProductEntity> userProducts = userProductRepository.findByUser(user);
+        Page<UserProductEntity> userProducts = userProductRepository.findByUserAndOrderStatus(user, status, pageable);
 
-        return userProducts.stream()
-                .map(UserProductEntity::getProduct)
-                .map(productMapper::toResponse)
-                .toList();
+        return userProducts.map(userProduct -> productMapper.toResponse(userProduct.getProduct()));
     }
-
 }

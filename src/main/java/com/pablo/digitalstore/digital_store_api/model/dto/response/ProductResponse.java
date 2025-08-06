@@ -28,9 +28,6 @@ public record ProductResponse(
         @Schema(description = "Type of the product", example = "EBOOK")
         ProductType type,
 
-        @Schema(description = "Whether the product is only available to premium users", example = "false")
-        Boolean premiumOnly,
-
         @Schema(description = "Download URL of the product file", example = "https://cdn.digitalstore.com/products/java-course.zip")
         String fileUrl,
 

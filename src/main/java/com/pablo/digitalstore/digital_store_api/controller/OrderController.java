@@ -2,6 +2,8 @@ package com.pablo.digitalstore.digital_store_api.controller;
 
 import com.pablo.digitalstore.digital_store_api.exception.ErrorDetails;
 import com.pablo.digitalstore.digital_store_api.model.dto.response.OrderResponse;
+import com.pablo.digitalstore.digital_store_api.model.dto.response.ProductResponse;
+import com.pablo.digitalstore.digital_store_api.model.enums.OrderStatus;
 import com.pablo.digitalstore.digital_store_api.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -129,36 +131,72 @@ public class OrderController {
     }
 
     @Operation(
-            summary = "Cancel (clear) the current user's cart",
-            description = "Empties the current user's cart, removing all items"
+            summary = "Cancel the current user's cart",
+            description = "Clears the current user's cart by removing all items"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Cart cleared successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Cart not found")
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = ErrorDetails.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Cart not found",
+                    content = @Content(schema = @Schema(implementation = ErrorDetails.class))
+            )
     })
-    @DeleteMapping("/cart/cancel")
     @PreAuthorize("hasAuthority('CANCEL_CART')")
+    @DeleteMapping("/cart/cancel")
     public ResponseEntity<Void> cancelCurrentCart() {
         orderService.cancelCurrentCart();
         return ResponseEntity.noContent().build();
     }
 
     @Operation(
-            summary = "Get current pending order",
-            description = "Returns the current pending order for the authenticated user."
+            summary = "Get current user's products by order status",
+            description = "Returns a paginated list of products purchased by the authenticated user, filtered by order status (PAID or PENDING)"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Pending order retrieved successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class))),
-            @ApiResponse(responseCode = "404", description = "No pending order found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDetails.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Products retrieved successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Page.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDetails.class)
+                    )
+            )
     })
-    @PreAuthorize("hasAuthority('VIEW_ORDERS')")
-    @GetMapping("/pending")
-    public ResponseEntity<OrderResponse> getPendingOrderForCurrentUser() {
-        return ResponseEntity.ok(orderService.getPendingOrderForCurrentUser());
+    @PreAuthorize("hasAuthority('VIEW_USER_PRODUCTS')")
+    @GetMapping("/products")
+    public ResponseEntity<Page<ProductResponse>> getUserProducts(
+            @Parameter(description = "Order status to filter products by", example = "PAID")
+            @RequestParam(name = "status", required = false, defaultValue = "PAID") OrderStatus status,
+
+            @Parameter(description = "Page number (0-based)", example = "0")
+            @RequestParam(defaultValue = "0") int pageNumber,@Parameter(description = "Number of items per page", example = "10")
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(pageNumber, size);
+        Page<ProductResponse> products = orderService.getProductsForCurrentUserByOrderStatus(status, pageable);
+        return ResponseEntity.ok(products);
     }
+
 }

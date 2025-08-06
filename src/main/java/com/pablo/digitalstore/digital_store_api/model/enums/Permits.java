@@ -4,7 +4,6 @@ public enum Permits {
     VIEW_PRODUCTS,
     CREATE_PRODUCT,
     DELETE_PRODUCT,
-    PURCHASE_PRODUCT,
 
     VIEW_USERS,
     MANAGE_USERS,
@@ -17,6 +16,6 @@ public enum Permits {
 
     CHECKOUT_CART,
     VIEW_ORDERS,
-    CANCEL_CART,
-    VIEW_PURCHASES
+    UPDATE_CART,
+    VIEW_USER_PRODUCTS
 }
